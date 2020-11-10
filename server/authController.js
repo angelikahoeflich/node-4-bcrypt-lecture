@@ -18,12 +18,33 @@ module.exports = {
         res.status(200).send(req.session.user);
     },
     login: (req, res) => {
-
+        const db = req.app.get('db');
+        const {email, password} = req.body;
+        const user = await db.check_user(email);
+        if(user[0]){
+            res.status(401).send{'incorrect credentials'}
+        } 
+        const authenticated = bcrypt.compareSync(password, user[0].password);
+        if (authenticated){
+            req.session.user ={
+                userId: user[0].user_id,
+                email:user[0].user_id,
+                username: user[0].username
+            }
+        res.status(200).sedn(req.session.user)
+        } else{
+            res.status(401).send('incorrect credentials')
+        }
     },
     logout: (req, res) => {
-
+        req.session.destroy();
+        res.sendStatus(200);
     },
     getUser: (req, res) => {
-        
+        if(req.session.user){
+            res.status(200).send(req.session.user)
+        } else {
+            res.sendStatus(400)
+        }
     }
 }
