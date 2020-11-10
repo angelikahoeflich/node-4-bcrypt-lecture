@@ -18,6 +18,11 @@ app.use(session({
     }
 }));
 
+app.use((req, res, next) => {
+    console.log('custom top level hit') 
+    next();
+})
+
 massive({
     connectionString: CONNECTION_STRING,
     ssl: {
